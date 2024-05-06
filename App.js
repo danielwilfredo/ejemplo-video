@@ -1,74 +1,94 @@
-import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { View, TextInput, FlatList, StyleSheet, TouchableOpacity, Text} from 'react-native';
+import { List, Checkbox } from 'react-native-paper';
 
-//importacion de componenetes
-import InputNumero from './src/components/InputNumero';
-import BotonSumar from './src/components/BotonSumar';
+import Input from './src/components/Input';
 
 export default function App() {
-  //Codigo JS
-    const [numero1, setNumero1]=useState(0)
-    const [numero2, setNumero2]=useState(0)
-    const [resultado, setResultado]=useState(0)
+  // Estado para el valor de la tarea y la lista de tareas
+  const [tarea, setTarea] = useState('');
+  const [tareas, setTareas] = useState([]);
 
-    const sumar=()=>{
-      let suma=parseFloat(numero1)+parseFloat(numero2)
-      setResultado(suma)
+  // Función para agregar una nueva tarea a la lista
+  const addTarea = () => {
+    if (tarea.trim() !== '') {
+      setTareas([...tareas, { id: Date.now(), titulo: tarea, completado: false }]);
+      setTarea('');
     }
+  };
 
-    const multi=()=>{
-      let multi=parseFloat(numero1)*parseFloat(numero2)
-      setResultado(multi)
-    }
+  // Función para marcar una tarea como completada
+  const completarTarea = (id) => {
+    setTareas(
+      tareas.map((tarea) =>
+        tarea.id === id ? { ...tarea, completado: !tarea.completado } : tarea
+      )
+    );
+  };
 
+  // Función para eliminar una tarea de la lista
+  const deleteTarea = (id) => {
+    setTareas(tareas.filter((tarea) => tarea.id !== id));
+  };
 
-
-  //codigo JS
+  // Componente de la aplicación
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>Ejemplo React Native Expo Go</Text>
-      
-      
-      <InputNumero
-      label_numero='Numero 1:'
-      valor_numero={numero1}
-      set_valor_numero={setNumero1}
-            />
-
-<InputNumero
-      label_numero='Numero 2:'
-      valor_numero={numero2}
-      set_valor_numero={setNumero2}
-            />
-      
-      <BotonSumar
-      label_boton='Sumatoria'
-      accion_boton={sumar}
+      {/* Entrada de texto para agregar una nueva tarea */}
+      <Input
+      label_numero='Agregar Tarea'
+      valor_numero={tarea}
+      set_valor_numero={setTarea}
       />
-            <BotonSumar
-      label_boton='Multiplicacion'
-      accion_boton={multi}
+      {/* Botón para agregar una nueva tarea */}
+      <TouchableOpacity
+        style={styles.btn}
+        onPress={addTarea}
+      >
+        <Text style={styles.texto}>Añadir Tarea</Text>
+      </TouchableOpacity>
+      {/* Lista de tareas */}
+      <FlatList
+        data={tareas}
+        renderItem={({ item }) => (
+          <List.Item
+            title={item.titulo}
+            onPress={() => completarTarea(item.id)} // Marca una tarea como completada cuando se presiona
+            onLongPress={()=>deleteTarea(item.id)} // Elimina una tarea cuando se mantiene presionada
+            left={() => (
+              <Checkbox
+                status={item.completado ? 'checked' : 'unchecked'} // Estado del checkbox basado en si la tarea está completada
+                onPress={() => completarTarea(item.id)}
+              />
+            )}
+            right={() => (
+              <List.Icon
+                icon="delete"
+                onPress={() => deleteTarea(item.id)} // Elimina una tarea cuando se presiona el icono de eliminar
+              />
+            )}
+          />
+        )}
+        keyExtractor={(item) => item.id.toString()}
       />
-
-
-      <Text style={{fontSize:20, fontWeight:'bold'}}>resultado: {resultado}</Text>
-      <StatusBar style="auto" />
     </View>
   );
 }
 
+// Estilos de la aplicación
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop:45
   },
-  titulo:{
-    backgroundColor:'#BBBFFF', 
-    padding:10, 
-    borderRadius:5
+  texto:{
+    color:'white', 
+    fontSize:15, 
+    textTransform:'uppercase', 
+    fontWeight:'800'
   }, 
   contenedorInput:{
     backgroundColor:'lightblue', 
@@ -76,10 +96,14 @@ const styles = StyleSheet.create({
     margin:5, 
     width:'50%'
   }, 
-  numero:{
-    textDecorationLine:'underline'
-  }, btnSumar:{
-    backgroundColor:'#BBBFFF', 
+  input:{
+  width:'50%', 
+  backgroundColor:'#d9e3f0', 
+  padding:5, 
+  margin:5
+  }, 
+  btn:{
+    backgroundColor:'#00428f', 
     padding:10, 
     borderRadius:5
   }

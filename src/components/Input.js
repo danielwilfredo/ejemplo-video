@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-export default function InputNumero({label_numero, valor_numero, set_valor_numero}) {
+export default function Input({label_numero, valor_numero, set_valor_numero}) {
 
     return(
         <>
@@ -37,7 +37,11 @@ const styles = StyleSheet.create({
       width:'50%'
     }, 
     numero:{
-      textDecorationLine:'underline'
+      textTransform:'uppercase', 
+      backgroundColor:'#FFF',
+      padding:2, 
+      width:'75%', 
+      fontWeight:'bold'
     }, btnSumar:{
       backgroundColor:'#BBBFFF', 
       padding:10, 
